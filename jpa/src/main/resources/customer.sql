@@ -1,0 +1,10 @@
+CREATE TABLE `t_customer` (
+	`unid` VARCHAR(32) NOT NULL,
+	`username` VARCHAR(32) NULL DEFAULT NULL,
+	`age` INT(11) NULL DEFAULT NULL,
+	`create_time` DATE NULL DEFAULT NULL,
+	`update_time` DATE NULL DEFAULT NULL,
+	PRIMARY KEY (`unid`)
+)
+ENGINE=InnoDB
+;
