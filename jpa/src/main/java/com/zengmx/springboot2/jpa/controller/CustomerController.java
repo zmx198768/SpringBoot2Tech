@@ -4,6 +4,9 @@ import com.zengmx.springboot2.core.constant.ResultCodeEnum;
 import com.zengmx.springboot2.core.exception.BaseException;
 import com.zengmx.springboot2.jpa.bean.Customer;
 import com.zengmx.springboot2.jpa.service.CustomerService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,23 +23,27 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/customer")
+@Api("用户操作接口")
 public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
 
     @RequestMapping("/count")
+    @ApiOperation("返回用户数量统计信息")
     public long count() {
         return customerService.count();
     }
 
     @RequestMapping("/add")
-    public String add(@RequestParam("username") String username, @RequestParam("birthday") String birthday) {
+    @ApiOperation("增加用户信息")
+    public String add(@RequestParam("username") @ApiParam("用户名") String username, @RequestParam("birthday") @ApiParam("出生日期") String birthday) {
         return customerService.add(username, birthday);
     }
 
     @RequestMapping("/update")
-    public boolean update(@RequestParam("username") String username, @RequestParam("birthday") String birthday) {
+    @ApiOperation("根据用户名更新用户信息")
+    public boolean update(@RequestParam("username") @ApiParam("用户名") String username, @RequestParam("birthday") @ApiParam("出生日期") String birthday) {
         try {
             return customerService.update(username, birthday);
         } catch (Exception e) {

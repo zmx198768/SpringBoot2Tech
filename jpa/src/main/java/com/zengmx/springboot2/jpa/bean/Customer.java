@@ -1,5 +1,7 @@
 package com.zengmx.springboot2.jpa.bean;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
@@ -19,20 +21,25 @@ import java.util.Date;
  * @date 2018/5/10  14:29
  */
 @Entity(name = "t_customer")
+@ApiModel("用户信息")
 public class Customer implements Serializable {
     private static final long serialVersionUID = -7432859108661956208L;
 
     @Id
     @GeneratedValue(generator = "sys-uuid")
     @GenericGenerator(name = "sys-uuid", strategy = "uuid")
+    @ApiModelProperty("用户唯一主键")
     private String unid;
 
     @NotNull
     @Size(min = 2, max = 32, message = "用户名称长度必须在2-32之间")
+    @ApiModelProperty("用户名")
     private String username;
 
+    @ApiModelProperty("用户昵称")
     private String nickname;
 
+    @ApiModelProperty("出生日期")
     private String birthday;
 
     @Column(name = "create_time",insertable = false,updatable = false)
