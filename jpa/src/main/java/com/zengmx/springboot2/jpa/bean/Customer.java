@@ -28,25 +28,32 @@ public class Customer implements Serializable {
     @Id
     @GeneratedValue(generator = "sys-uuid")
     @GenericGenerator(name = "sys-uuid", strategy = "uuid")
-    @ApiModelProperty("用户唯一主键")
+    @ApiModelProperty(value = "用户唯一主键", position = 0)
+    /**
+     * 1、使用uuid策略生成bean主键
+     * 2、apimodelproperty若没有指定position，则为无序；未指定position优先；同一position值无序
+     */
     private String unid;
 
     @NotNull
     @Size(min = 2, max = 32, message = "用户名称长度必须在2-32之间")
-    @ApiModelProperty("用户名")
+    @ApiModelProperty(value = "用户名", position = 1)
     private String username;
 
-    @ApiModelProperty("用户昵称")
+    @ApiModelProperty(value = "用户昵称", position = 2)
     private String nickname;
 
-    @ApiModelProperty("出生日期")
+    @ApiModelProperty(value = "出生日期", position = 3)
     private String birthday;
 
     @Column(name = "create_time",insertable = false,updatable = false)
+    @ApiModelProperty(value = "注册时间", position = 4)
     private Date createTime;
     @Column(name = "update_time",insertable = false,updatable = false)
+    @ApiModelProperty(value = "最后更新时间", position = 5)
     private Date updateTime;
 
+    @ApiModelProperty(value = "是否启用", position = 6)
     private Boolean enable;
 
     public String getUnid() {

@@ -1,7 +1,9 @@
 package com.zengmx.springboot2.jpa;
 
+import com.zengmx.springboot2.core.config.SwaggerConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
 
 /**
  * Title:
@@ -11,6 +13,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2018/5/10  14:04
  */
 @SpringBootApplication
+@Import(SwaggerConfig.class)
 public class Application {
 
     public static void main(String[] args) {
