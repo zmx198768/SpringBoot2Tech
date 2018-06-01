@@ -38,6 +38,7 @@ public class Customer implements Serializable {
     @NotNull
     @Size(min = 2, max = 32, message = "用户名称长度必须在2-32之间")
     @ApiModelProperty(value = "用户名", position = 1)
+    @Column
     private String username;
 
     @ApiModelProperty(value = "用户昵称", position = 2)

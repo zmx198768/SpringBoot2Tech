@@ -1,5 +1,3 @@
-package com.zengmx.springboot2.core.tool
-
 import com.intellij.database.model.DasTable
 import com.intellij.database.model.ObjectKind
 import com.intellij.database.util.Case
@@ -7,11 +5,13 @@ import com.intellij.database.util.DasUtil
 
 import java.sql.Date
 
-/*
- * Available context bindings:
- *   SELECTION   Iterable<DasObject>
- *   PROJECT     project
- *   FILES       files helper
+
+/**
+ * Title:由数据库生成entity模板，若有注释，默认采用swagger进行注解，对于所有实体类，默认实现序列化（idea使用，打开database panel后，scripted extension→go to script directory，将本entity放入即可）
+ * Company:互撸娃大战铁茎肛.avi
+ *
+ * @author <a href="mailto:8574157@qq.com">zengmx</a>
+ * @date 2018-6-1 09:18:00
  */
 
 packageName = ""
@@ -28,21 +28,17 @@ typeMapping = [
 FILES.chooseDirectoryAndSave("Choose directory", "Choose where to store generated files") { dir ->
   SELECTION.filter { it instanceof DasTable && it.getKind() == ObjectKind.TABLE }.each { generate(it, dir) }
 }
-
+/**
+ * 创建对应的pojo Java文件
+ * @param table
+ * @param dir
+ * @return
+ */
 def generate(table, dir) {
   def className = javaName(table.getName(), true)
   def fields = calcFields(table)
   packageName = getPackageName(dir)
   new File(dir, className + ".java").withPrintWriter { out -> generate(out, className, fields, table) }
-}
-
-/**
- * 获取包名称
- * @param dir 实体类所在目录
- * @return
- */
-def getPackageName(dir) {
-  return dir.toString().replaceAll("/", ".").replaceAll("\\\\", ".").replaceAll("^.*src(\\.main\\.java\\.)?", "") + ";"
 }
 
 /**
@@ -53,17 +49,31 @@ def getPackageName(dir) {
  * @return
  */
 def generate(out, className, fields, table) {
+  //获取字段类型、获取是否有表注释、是否有字段注释
   Set types = new HashSet()
+  def tableApi = false
+  if (isNotEmpty(table.comment)) {
+    tableApi = true
+  }
+  def columnApi = false
 
   fields.each() {
     types.add(it.type)
+    if (isNotEmpty(it.comment)) {
+      columnApi = true
+    }
   }
 
   out.println "package $packageName"
   out.println ""
-    //异常乱码问题导致生成的POJO也乱码，待处理后开放
-  //out.println "import io.swagger.annotations.ApiModel;"
-  //out.println "import io.swagger.annotations.ApiModelProperty;"
+
+  if (tableApi == true) {
+    out.println "import io.swagger.annotations.ApiModel;"
+  }
+  if (tableApi == true) {
+    out.println "import io.swagger.annotations.ApiModelProperty;"
+  }
+
   out.println "import org.hibernate.annotations.GenericGenerator;"
 
   out.println "import javax.persistence.Column;"
@@ -88,7 +98,8 @@ def generate(out, className, fields, table) {
   out.println " */"
   out.println "@Entity(name = \"" + table.getName() + "\")"
   if (isNotEmpty(table.comment)) {
-    //out.println "@ApiModel(\"" + table.comment + "\")"
+    //此处若发现获取到的注释乱码，但是模板中的中文正常，且setting、db connect都是utf-8时，可以在idea目录中在idea64.exe.vmoptions文件最后添加 -Dfile.encoding=utf8   即可解决
+    out.println "@ApiModel(\"" + table.comment + "\")"
   }
   out.println "public class $className  implements Serializable {"
   out.println genSerialID()
@@ -98,9 +109,10 @@ def generate(out, className, fields, table) {
 
     // 输出注释
     if (isNotEmpty(it.comment)) {
-      //out.println "@ApiModelProperty(\"" + it.comment + "\")"
+      out.println "  @ApiModelProperty(\"" + it.comment + "\")"
     }
 
+    //如果列名为id或者unid，则默认为主键，主键采用uuid策略生成
     if (it.name == 'id' || it.name == 'unid'  ) {
       out.println "  @Id"
       out.println "  @GeneratedValue(generator = \"sys-uuid\")"
@@ -110,6 +122,7 @@ def generate(out, className, fields, table) {
     }
 
     out.println "  private ${it.type} ${it.name.replace('_', '')};"
+    out.println ""
   }
   out.println ""
   fields.each() {
@@ -126,6 +139,17 @@ def generate(out, className, fields, table) {
     out.println "  }"
   }
   out.println "}"
+}
+
+
+
+/**
+ * 获取包名称
+ * @param dir 实体类所在目录
+ * @return
+ */
+def getPackageName(dir) {
+  return dir.toString().replaceAll("/", ".").replaceAll("\\\\", ".").replaceAll("^.*src(\\.main\\.java\\.)?", "") + ";"
 }
 
 def calcFields(table) {
