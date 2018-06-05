@@ -5,3 +5,8 @@ server:
 spring:
   profiles:
     include: datasource, swagger
+  datasource:
+    druid:
+      filter:
+        logback:
+          statement-executable-sql-log-enable: true
